@@ -7,12 +7,20 @@ export default function Home() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-600">Local Web Creator</h1>
-          <Link
-            href="/builder"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-          >
-            Get Started
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/niche-finder"
+              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+            >
+              AI Niche Finder
+            </Link>
+            <Link
+              href="/builder"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Website Builder
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -20,24 +28,41 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
-            Create Your Professional Website
+            Discover Your Niche & Build Your Website
             <br />
-            <span className="text-blue-600">In Minutes, Not Hours</span>
+            <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              All Powered by AI
+            </span>
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Free, no-signup-required website builder designed specifically for local businesses.
-            AI-powered content generation, real-time preview, and instant deployment.
+            First, discover profitable web app ideas with our AI Niche Finder. Then, create your professional website with our free, no-signup-required builder.
           </p>
-          <Link
-            href="/builder"
-            className="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl"
-          >
-            Start Building Your Website →
-          </Link>
+          <div className="flex gap-4 justify-center">
+            <Link
+              href="/niche-finder"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl"
+            >
+              🔍 Find Your Niche
+            </Link>
+            <Link
+              href="/builder"
+              className="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl"
+            >
+              🚀 Build Website
+            </Link>
+          </div>
         </div>
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-8 rounded-xl shadow-md border-2 border-purple-200">
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-xl font-bold mb-3">AI Niche Finder</h3>
+            <p className="text-gray-600">
+              Discover profitable web app ideas with instant market analysis, competition scores, and monetization strategies.
+            </p>
+          </div>
+
           <div className="bg-white p-8 rounded-xl shadow-md">
             <div className="text-4xl mb-4">⚡</div>
             <h3 className="text-xl font-bold mb-3">Zero Friction</h3>
