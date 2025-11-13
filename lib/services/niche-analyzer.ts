@@ -1,6 +1,12 @@
 /**
  * AI Niche Analyzer Service
  * Uses Google Gemini API to analyze market niches and generate insights
+ *
+ * SECURITY FEATURES:
+ * - API keys are never logged
+ * - Keys are sanitized in error messages
+ * - Client-side only (never sent to any server except Google)
+ * - Validates API key format before use
  */
 
 import type {
@@ -18,6 +24,22 @@ import type {
 } from '@/lib/types/niche-finder';
 
 const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+
+/**
+ * Mask API key for safe logging (shows only first 4 and last 4 characters)
+ */
+function maskApiKey(apiKey: string): string {
+  if (!apiKey || apiKey.length < 8) return '****';
+  return `${apiKey.substring(0, 4)}${'*'.repeat(apiKey.length - 8)}${apiKey.substring(apiKey.length - 4)}`;
+}
+
+/**
+ * Validate API key format (basic check)
+ */
+function isValidApiKeyFormat(apiKey: string): boolean {
+  // Google API keys typically start with 'AIza' and are 39 characters
+  return apiKey.length >= 20 && /^[A-Za-z0-9_-]+$/.test(apiKey);
+}
 
 interface GeminiResponse {
   candidates?: Array<{
@@ -197,6 +219,12 @@ async function callGeminiAPI(prompt: string, apiKey: string): Promise<string> {
  * Main function to analyze a niche
  */
 export async function analyzeNiche(request: AnalysisRequest): Promise<AnalysisResponse> {
+  // Create a sanitized copy of the request for logging (never log the API key)
+  const sanitizedRequest = {
+    ...request,
+    apiKey: maskApiKey(request.apiKey),
+  };
+
   try {
     // Validate input
     if (!request.topic || request.topic.trim().length === 0) {
@@ -213,10 +241,18 @@ export async function analyzeNiche(request: AnalysisRequest): Promise<AnalysisRe
       };
     }
 
+    // Validate API key format (basic security check)
+    if (!isValidApiKeyFormat(request.apiKey)) {
+      return {
+        success: false,
+        error: 'Invalid API key format. Please check your key and try again.',
+      };
+    }
+
     // Generate prompt
     const prompt = generatePrompt(request);
 
-    // Call Gemini API
+    // Call Gemini API (API key is used here but never logged)
     const responseText = await callGeminiAPI(prompt, request.apiKey);
 
     // Parse JSON response
@@ -224,7 +260,8 @@ export async function analyzeNiche(request: AnalysisRequest): Promise<AnalysisRe
     try {
       parsedData = JSON.parse(responseText);
     } catch (parseError) {
-      console.error('Failed to parse JSON:', responseText);
+      // Never log the full response as it might contain sensitive data
+      console.error('Failed to parse JSON response');
       throw new Error('Failed to parse AI response. Please try again.');
     }
 
@@ -274,10 +311,20 @@ export async function analyzeNiche(request: AnalysisRequest): Promise<AnalysisRe
       data: analysis,
     };
   } catch (error) {
-    console.error('Error analyzing niche:', error);
+    // Log error without exposing API key
+    console.error('Error analyzing niche (API key: ' + maskApiKey(request.apiKey) + ')');
+
+    // Sanitize error message to ensure no API key leakage
+    let errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+
+    // Remove any potential API key from error message
+    if (request.apiKey && errorMessage.includes(request.apiKey)) {
+      errorMessage = errorMessage.replace(new RegExp(request.apiKey, 'g'), maskApiKey(request.apiKey));
+    }
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'An unexpected error occurred',
+      error: errorMessage,
     };
   }
 }
